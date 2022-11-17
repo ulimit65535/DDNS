@@ -16,6 +16,7 @@ except ImportError:
     # python 3
     from http.client import HTTPSConnection
     from urllib.parse import urlencode
+    import ssl
 
 __author__ = 'NN708'
 
@@ -48,7 +49,8 @@ def request(param=None, **params):
         conn = HTTPSConnection(Config.PROXY)
         conn.set_tunnel(API.SITE, 443)
     else:
-        conn = HTTPSConnection(API.SITE)
+        conn = HTTPSConnection(API.SITE,
+                               context = ssl._create_unverified_context())
 
     conn.request(API.METHOD, '/' + API.ACTION, urlencode(params), {
         "Content-type": "application/x-www-form-urlencoded"

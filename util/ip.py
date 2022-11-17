@@ -9,7 +9,8 @@ try:
     from urllib2 import urlopen, Request
 except ImportError:
     # python3
-    from urllib.request import urlopen, Request
+    # from urllib.request import urlopen, Request
+    import urllib.request
 
 # IPV4正则
 IPV4_REG = r'((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])'
@@ -49,9 +50,16 @@ def local_v4(i=0):  # 本地ipv4地址
 def _open(url, reg):
     try:
         debug("open: %s", url)
-        res = urlopen(
-            Request(url, headers={'User-Agent': 'curl/7.63.0-ddns'}),  timeout=60
-        ).read().decode('utf8', 'ignore')
+        headers = {'User-Agent': 'curl/7.63.0-ddns'}
+        proxy_handler = urllib.request.ProxyHandler({})
+        opener = urllib.request.build_opener(proxy_handler)
+        urllib.request.install_opener(opener)
+
+        request = urllib.request.Request(url=url, headers=headers)
+        res = urllib.request.urlopen(request).read().decode('utf8', 'ignore')
+        # res = urlopen(
+        #     Request(url, headers={'User-Agent': 'curl/7.63.0-ddns'}),  timeout=60
+        # ).read().decode('utf8', 'ignore')
         debug("response: %s",  res)
         return compile(reg).search(res).group()
     except Exception as e:
