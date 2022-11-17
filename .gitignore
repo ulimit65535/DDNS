@@ -146,3 +146,4 @@ $RECYCLE.BIN/
 config.json
 
 .venv
+.idea
